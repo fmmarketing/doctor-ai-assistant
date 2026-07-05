@@ -1,18 +1,19 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
+import { useTransition } from "react"
+import { logout } from "@/lib/actions/auth"
 import { Button } from "@/components/ui/button"
 import { LogOut, Menu } from "lucide-react"
 
 export function Header() {
   const router = useRouter()
-  const supabase = createClient()
+  const [isPending, startTransition] = useTransition()
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push("/login")
-    router.refresh()
+  const handleLogout = () => {
+    startTransition(async () => {
+      await logout()
+    })
   }
 
   return (
@@ -35,10 +36,11 @@ export function Header() {
             variant="ghost"
             size="sm"
             onClick={handleLogout}
+            disabled={isPending}
             className="text-gray-600 hover:text-red-600"
           >
             <LogOut className="h-4 w-4 mr-2" />
-            Cerrar Sesión
+            {isPending ? "Cerrando..." : "Cerrar Sesión"}
           </Button>
         </div>
       </div>

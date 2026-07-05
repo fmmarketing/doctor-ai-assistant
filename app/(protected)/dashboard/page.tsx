@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server"
+import { getProfile } from "@/lib/actions/profile"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Users, FileText, Activity, Plus } from "lucide-react"
+import { Users, FileText, Activity, Plus, Stethoscope } from "lucide-react"
 import Link from "next/link"
 
 export default async function DashboardPage() {
@@ -11,13 +12,17 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser()
 
+  const profile = await getProfile()
+
+  const displayName = profile?.full_name || user?.email?.split("@")[0] || "Doctor"
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-600">
-            Bienvenido, {user?.email || "Doctor"}
+            Bienvenido, {displayName}
           </p>
         </div>
         <Link href="/patients/new">

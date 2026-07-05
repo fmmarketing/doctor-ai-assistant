@@ -2,18 +2,17 @@
 
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { login } from "@/lib/actions/auth"
+import { signup } from "@/lib/actions/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Stethoscope } from "lucide-react"
-import { Suspense, useTransition } from "react"
+import { Suspense } from "react"
 
-function LoginForm() {
+function SignupForm() {
   const searchParams = useSearchParams()
   const error = searchParams.get("error")
-  const [isPending, startTransition] = useTransition()
 
   return (
     <Card className="w-full max-w-md">
@@ -24,21 +23,24 @@ function LoginForm() {
           </div>
         </div>
         <CardTitle className="text-2xl font-bold text-blue-900">
-          Doctor AI Assistant
+          Crear Cuenta
         </CardTitle>
         <CardDescription>
-          Inicia sesión para acceder a tu cuenta
+          Regístrate para acceder al sistema
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form
-          action={(formData) => {
-            startTransition(async () => {
-              await login(formData)
-            })
-          }}
-          className="space-y-4"
-        >
+        <form action={signup} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="full_name">Nombre Completo</Label>
+            <Input
+              id="full_name"
+              name="full_name"
+              type="text"
+              placeholder="Dr. Juan Pérez"
+              required
+            />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -56,6 +58,7 @@ function LoginForm() {
               name="password"
               type="password"
               placeholder="••••••••"
+              minLength={6}
               required
             />
           </div>
@@ -64,13 +67,13 @@ function LoginForm() {
               {error}
             </div>
           )}
-          <Button type="submit" className="w-full" disabled={isPending}>
-            {isPending ? "Iniciando sesión..." : "Iniciar Sesión"}
+          <Button type="submit" className="w-full">
+            Crear Cuenta
           </Button>
           <div className="text-center text-sm text-gray-600">
-            ¿No tienes cuenta?{" "}
-            <Link href="/signup" className="text-blue-600 hover:underline">
-              Regístrate
+            ¿Ya tienes cuenta?{" "}
+            <Link href="/login" className="text-blue-600 hover:underline">
+              Inicia sesión
             </Link>
           </div>
         </form>
@@ -79,11 +82,11 @@ function LoginForm() {
   )
 }
 
-export default function LoginPage() {
+export default function SignupPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
       <Suspense fallback={<div>Cargando...</div>}>
-        <LoginForm />
+        <SignupForm />
       </Suspense>
     </div>
   )
