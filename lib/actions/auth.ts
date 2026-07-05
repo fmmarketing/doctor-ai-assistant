@@ -29,7 +29,7 @@ export async function signup(formData: FormData) {
   const password = formData.get("password") as string
   const fullName = formData.get("full_name") as string
 
-  const { error } = await supabase.auth.signUp({
+  const { data: { user }, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -41,6 +41,16 @@ export async function signup(formData: FormData) {
 
   if (error) {
     redirect("/signup?error=" + encodeURIComponent(error.message))
+  }
+
+  // Create profile after signup
+  if (user) {
+    await supabase.from("profiles").upsert({
+      user_id: user.id,
+      full_name: fullName || user.email?.split("@")[0] || "Doctor",
+      email: user.email || "",
+      role: "doctor",
+    })
   }
 
   revalidatePath("/", "layout")
